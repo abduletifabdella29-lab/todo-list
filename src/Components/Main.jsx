@@ -16,13 +16,65 @@ function Main() {
     const [filter, setFilter] = useState('ALL')
     const [isNewNoteOpen, setIsNewNoteOpen] = useState(false)
 
+    const [notes, setNotes] = useState(() => {
+        const savedNotes = localStorage.getItem('notes')
+
+        if (savedNotes) {
+            const parsedNotes = JSON.parse(savedNotes)
+
+            return parsedNotes.map((note) =>
+                typeof note === 'string'
+                    ? { text: note, completed: false }
+                    : note
+            )
+        }
+
+        return []
+    })
+
     useEffect(() => {
         localStorage.setItem('darkMode', darkMode)
     }, [darkMode])
 
+    useEffect(() => {
+        localStorage.setItem('notes', JSON.stringify(notes))
+    }, [notes])
+
+    const handleApplyNote = (newNote) => {
+        setNotes((previousNotes) => [
+            ...previousNotes,
+            {
+                text: newNote,
+                completed: false
+            }
+        ])
+
+        setIsNewNoteOpen(false)
+    }
+
+    const handleComplete = (index) => {
+        setNotes((previousNotes) =>
+            previousNotes.map((note, noteIndex) =>
+                noteIndex === index
+                    ? {
+                        ...note,
+                        completed: !note.completed
+                    }
+                    : note
+            )
+        )
+    }
+
+    const handleDelete = (index) => {
+    setNotes((previousNotes) =>
+        previousNotes.filter((_, noteIndex) => noteIndex !== index)
+    )
+    }
+
     return (
         <>
             <div className={darkMode ? 'bg-gray-900 text-white min-h-screen' : 'bg-white text-black min-h-screen'}>
+
                 <div>
                     <h1 className='font-medium text-[26px] text-center pt-5'>
                         TODO LIST
@@ -30,6 +82,7 @@ function Main() {
                 </div>
 
                 <div className='w-full flex justify-center h-9.5 mt-4'>
+
                     <div className='relative flex items-center'>
                         <input
                             type="search"
@@ -38,35 +91,44 @@ function Main() {
                                 darkMode
                                     ? 'bg-gray-800 text-white placeholder:text-gray-300'
                                     : 'bg-white text-black placeholder:text-gray-500'
-                            }`}/>
+                            }`}
+                        />
+
                         <img
                             className='absolute right-3 w-5.25 h-5.25'
                             src={search}
-                            alt="search icon"/>
+                            alt="search icon"
+                        />
                     </div>
 
                     <div className='relative ml-5'>
+
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="bg-[#6C63FF] w-30 h-9.5 rounded-lg flex items-center justify-between px-1.5 hover:bg-[#574DDB] transition-colors duration-200">
-                            <h1 className="text-white font-semibold text-[18px]">
+                            className='bg-[#6C63FF] w-30 h-9.5 rounded-lg flex items-center justify-between px-1.5 hover:bg-[#574DDB] transition-colors duration-200'
+                        >
+                            <h1 className='text-white font-semibold text-[18px]'>
                                 {filter}
                             </h1>
+
                             <img
                                 src={bottomArrow}
                                 className={`w-4.5 h-1 object-contain transition-transform duration-200 ${
                                     isOpen ? 'rotate-180' : ''
-                                }`}/>
+                                }`}
+                            />
                         </button>
 
                         {isOpen && (
-                            <div className="absolute top-10 left-0 w-30 bg-white border-2 border-[#6C63FF] rounded-lg overflow-hidden z-10">
+                            <div className='absolute top-10 left-0 w-30 bg-white border-2 border-[#6C63FF] rounded-lg overflow-hidden z-10'>
+
                                 <button
                                     onClick={() => {
                                         setFilter('ALL')
                                         setIsOpen(false)
                                     }}
-                                    className="w-full text-left px-2 py-1 text-[#6C63FF] text-[18px] hover:bg-[#c4c2f3]">
+                                    className='w-full text-left px-2 py-1 text-[#6C63FF] text-[18px] hover:bg-[#c4c2f3]'
+                                >
                                     All
                                 </button>
 
@@ -75,7 +137,8 @@ function Main() {
                                         setFilter('Complete')
                                         setIsOpen(false)
                                     }}
-                                    className="w-full text-left px-2 py-1 text-[#6C63FF] text-[18px] hover:bg-[#c4c2f3]">
+                                    className='w-full text-left px-2 py-1 text-[#6C63FF] text-[18px] hover:bg-[#c4c2f3]'
+                                >
                                     Complete
                                 </button>
 
@@ -84,9 +147,11 @@ function Main() {
                                         setFilter('Incomplete')
                                         setIsOpen(false)
                                     }}
-                                    className="w-full text-left px-2 py-1 text-[#6C63FF] text-[18px] hover:bg-[#c4c2f3]">
+                                    className='w-full text-left px-2 py-1 text-[#6C63FF] text-[18px] hover:bg-[#c4c2f3]'
+                                >
                                     Incomplete
                                 </button>
+
                             </div>
                         )}
                     </div>
@@ -94,34 +159,106 @@ function Main() {
                     <div>
                         <button
                             onClick={() => setDarkMode(!darkMode)}
-                            className="bg-[#6C63FF] h-9.5 rounded-lg ml-5 px-3 hover:bg-[#574DDB] transition-colors duration-200">
+                            className='bg-[#6C63FF] h-9.5 rounded-lg ml-5 px-3 hover:bg-[#574DDB] transition-colors duration-200'
+                        >
                             <img
                                 src={moon}
-                                className="w-5.5 h-5.5 object-contain"
-                                alt="dark mode"/>
+                                className='w-5.5 h-5.5 object-contain'
+                                alt='dark mode'
+                            />
                         </button>
                     </div>
+
                 </div>
 
-                <div className='max-w-187.5 relative mx-auto'>
-                    <img
-                        className='w-55.25 h-43.5 mt-7.5 mx-auto'
-                        src={searchMan}
-                        alt="empty"
-                        />
-                    <h1 className='font-normal text-[20px] text-center pt-5'>
-                        Empty...
-                    </h1>
+                <div className='max-w-187.5 mx-auto relative min-h-105'>
+
+                    {notes.length === 0 ? (
+                        <>
+                            <img
+                                className='w-55.25 h-43.5 mt-7.5 mx-auto'
+                                src={searchMan}
+                                alt='empty'
+                            />
+
+                            <h1 className='font-normal text-[20px] text-center pt-5'>
+                                Empty...
+                            </h1>
+                        </>
+                    ) : (
+                        <div className='pt-8 w-[80%] md:w-125 mx-auto flex flex-col gap-4 pb-28'>
+
+                            {notes.map((note, index) => (
+                                <div
+                                    key={index}
+                                    className={` shadow-sm ${
+                                        darkMode
+                                            ? 'text-white'
+                                            : 'text-black'
+                                    }`}
+                                >
+
+                                    <div className='flex items-center justify-between'>
+
+                                        <div className='flex items-center gap-3 min-w-0'>
+
+                                            <input
+                                                type='checkbox'
+                                                checked={note.completed}
+                                                onChange={() => handleComplete(index)}
+                                                className='w-4 h-4 accent-[#6C63FF] rounded cursor-pointer shrink-0'
+                                            />
+
+                                            <p
+                                                className={`wrap-break-word ${
+                                                    note.completed
+                                                        ? 'font-normal text-[16px] line-through decoration-[#6C63FF] decoration-2 px-1'
+                                                        : 'font-medium text-[18px]'
+                                                }`}
+                                            >
+                                                {note.text}
+                                            </p>
+
+                                        </div>
+
+                                        <div className='flex items-center gap-3 text-sm ml-3 shrink-0'>
+
+                                            <button className='opacity-70 hover:opacity-100'>
+                                                ✏️
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleDelete(index)}
+                                                className='opacity-70 hover:opacity-100 transition-colors duration-200'
+                                            >
+                                                🗑️
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div className='h-0.5 bg-[#6C63FF] mt-3 rounded-full'></div>
+
+                                </div>
+                            ))}
+
+                        </div>
+                    )}
 
                     <button
                         onClick={() => setIsNewNoteOpen(true)}
-                        className="bg-[#6C63FF] w-12.5 h-12.5 rounded-full right-11 mt-25 absolute hover:bg-[#574DDB] transition-colors duration-200">
+                        className='bg-[#6C63FF] w-12.5 h-12.5 rounded-full right-11 bottom-8 absolute hover:bg-[#574DDB] transition-colors duration-200'
+                    >
                         <img
-                            className="w-6 h-6 mx-auto"
+                            className='w-6 h-6 mx-auto'
                             src={plus}
-                            alt="add note"/>
+                            alt='add note'
+                        />
                     </button>
+
                 </div>
+
             </div>
 
             {isNewNoteOpen && (
@@ -131,9 +268,11 @@ function Main() {
                     <NewNote
                         darkMode={darkMode}
                         onClose={() => setIsNewNoteOpen(false)}
+                        onApply={handleApplyNote}
                     />
                 </>
             )}
+
         </>
     )
 }
