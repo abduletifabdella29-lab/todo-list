@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import search from '../assets/icons/search.svg'
 import bottomArrow from '../assets/icons/bottomArrow.png'
 import moon from '../assets/icons/moon.svg'
+import sun from '../assets/icons/sun.svg'
 import searchMan from '../assets/images/searchMan.png'
 import plus from '../assets/icons/plus.png'
 import NewNote from './NewNote'
@@ -39,6 +40,34 @@ function Main() {
     useEffect(() => {
         localStorage.setItem('notes', JSON.stringify(notes))
     }, [notes])
+
+    const [editingIndex, setEditingIndex] = useState(null)
+    const [editText, setEditText] = useState('')
+
+    const handleEdit = (index) => {
+    setEditingIndex(index)
+    setEditText(notes[index].text)
+    }
+
+    const handleSaveEdit = () => {
+    if (editText.trim() === '') {
+        return
+    }
+
+    setNotes((previousNotes) =>
+        previousNotes.map((note, noteIndex) =>
+            noteIndex === editingIndex
+                ? {
+                    ...note,
+                    text: editText.trim()
+                }
+                : note
+        )
+    )
+
+    setEditingIndex(null)
+    setEditText('')
+}
 
     const handleApplyNote = (newNote) => {
         setNotes((previousNotes) => [
@@ -158,13 +187,15 @@ function Main() {
 
                     <div>
                         <button
-                            onClick={() => setDarkMode(!darkMode)}
+                            onClick={() => {
+                                setDarkMode(!darkMode)
+                            }}
                             className='bg-[#6C63FF] h-9.5 rounded-lg ml-5 px-3 hover:bg-[#574DDB] transition-colors duration-200'
                         >
                             <img
-                                src={moon}
+                                src={darkMode ? sun : moon}
                                 className='w-5.5 h-5.5 object-contain'
-                                alt='dark mode'
+                                alt={darkMode ? 'light mode' : 'dark mode'}
                             />
                         </button>
                     </div>
@@ -209,21 +240,43 @@ function Main() {
                                                 className='w-4 h-4 accent-[#6C63FF] rounded cursor-pointer shrink-0'
                                             />
 
-                                            <p
-                                                className={`wrap-break-word ${
-                                                    note.completed
-                                                        ? 'font-normal text-[16px] line-through decoration-[#6C63FF] decoration-2 px-1'
-                                                        : 'font-medium text-[18px]'
-                                                }`}
-                                            >
-                                                {note.text}
-                                            </p>
+                                            {editingIndex === index ? (
+                                                <div className='flex items-center gap-2'>
+                                                    <input
+                                                        type='text'
+                                                        value={editText}
+                                                        onChange={(e) => setEditText(e.target.value)}
+                                                        className='border-[1.4px] border-[#6C63FF] rounded-lg px-2 py-1 outline-none'
+                                                    />
+
+                                                    <button
+                                                        onClick={handleSaveEdit}
+                                                        className='bg-[#6C63FF] hover:bg-[#574DDB] text-white px-3 py-1 rounded'
+                                                    >
+                                                        SAVE
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <p
+                                                    className={`wrap-break-word ${
+                                                        note.completed
+                                                            ? 'font-normal text-[16px] line-through decoration-[#6C63FF] decoration-2 px-1'
+                                                            : 'font-medium text-[18px]'
+                                                    }`}
+                                                >
+                                                    {note.text.length >= 20
+                                                        ? `${note.text.slice(0, 20)}...`
+                                                        : note.text}
+                                                </p>
+                                            )}
 
                                         </div>
 
                                         <div className='flex items-center gap-3 text-sm ml-3 shrink-0'>
 
-                                            <button className='opacity-70 hover:opacity-100'>
+                                            <button
+                                                onClick={() => handleEdit(index)}
+                                                className='opacity-70 hover:opacity-100'>
                                                 ✏️
                                             </button>
 
