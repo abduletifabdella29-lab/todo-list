@@ -308,7 +308,7 @@ function Main() {
 
                     <button
                         onClick={() => setIsNewNoteOpen(true)}
-                        className='bg-[#6C63FF] w-12.5 h-12.5 rounded-full right-11 bottom-8 absolute hover:bg-[#574DDB] transition-colors duration-200'
+                        className='bg-[#6C63FF] w-12.5 h-12.5 rounded-full right-8 bottom-8 fixed  sm:right-8 md:right-20 lg:right-35  hover:bg-[#574DDB] transition-colors duration-200'
                     >
                         <img
                             className='w-6 h-6 mx-auto'
