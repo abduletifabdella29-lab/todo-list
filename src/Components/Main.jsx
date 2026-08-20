@@ -43,6 +43,7 @@ function Main() {
 
     const [editingIndex, setEditingIndex] = useState(null)
     const [editText, setEditText] = useState('')
+    const [searchText, setSearchText] = useState('')
 
     const handleEdit = (index) => {
     setEditingIndex(index)
@@ -94,6 +95,10 @@ function Main() {
         )
     }
 
+    const filteredNotes = notes.filter((note) =>
+    note.text.toLowerCase().includes(searchText.toLowerCase())
+    )
+
     const handleDelete = (index) => {
     setNotes((previousNotes) =>
         previousNotes.filter((_, noteIndex) => noteIndex !== index)
@@ -116,6 +121,8 @@ function Main() {
                         <input
                             type="search"
                             placeholder='Search note...'
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
                             className={`sm:w-95.75 lg:w-148.75 h-9.5 pl-3 pr-10 border-[1.4px] border-[#6C63FF] rounded-lg outline-none text-sm ${
                                 darkMode
                                     ? 'bg-gray-800 text-white placeholder:text-gray-300'
@@ -204,8 +211,8 @@ function Main() {
 
                 <div className='max-w-187.5 mx-auto relative min-h-105'>
 
-                    {notes.length === 0 ? (
-                        <>
+                    {filteredNotes.length === 0 ? (
+                        <div>
                             <img
                                 className='w-55.25 h-43.5 mt-7.5 mx-auto'
                                 src={searchMan}
@@ -215,11 +222,11 @@ function Main() {
                             <h1 className='font-normal text-[20px] text-center pt-5'>
                                 Empty...
                             </h1>
-                        </>
+                        </div>
                     ) : (
                         <div className='pt-8 w-[80%] md:w-125 mx-auto flex flex-col gap-4 pb-28'>
 
-                            {notes.map((note, index) => (
+                            {filteredNotes.map((note, index) => (
                                 <div
                                     key={index}
                                     className={` shadow-sm ${
