@@ -95,9 +95,18 @@ function Main() {
         )
     }
 
-    const filteredNotes = notes.filter((note) =>
-    note.text.toLowerCase().includes(searchText.toLowerCase())
-    )
+    const filteredNotes = notes.filter((note) => {
+    const matchesSearch = note.text
+        .toLowerCase()
+        .includes(searchText.toLowerCase())
+
+    const matchesFilter =
+        filter === 'ALL' ||
+        (filter === 'Complete' && note.completed) ||
+        (filter === 'Incomplete' && !note.completed)
+
+    return matchesSearch && matchesFilter
+    })
 
     const handleDelete = (index) => {
     setNotes((previousNotes) =>
