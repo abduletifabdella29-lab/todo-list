@@ -46,29 +46,29 @@ function Main() {
     const [searchText, setSearchText] = useState('')
 
     const handleEdit = (index) => {
-    setEditingIndex(index)
-    setEditText(notes[index].text)
+        setEditingIndex(index)
+        setEditText(notes[index].text)
     }
 
     const handleSaveEdit = () => {
-    if (editText.trim() === '') {
-        return
-    }
+        if (editText.trim() === '') {
+            return
+        }
 
-    setNotes((previousNotes) =>
-        previousNotes.map((note, noteIndex) =>
-            noteIndex === editingIndex
-                ? {
-                    ...note,
-                    text: editText.trim()
-                }
-                : note
+        setNotes((previousNotes) =>
+            previousNotes.map((note, noteIndex) =>
+                noteIndex === editingIndex
+                    ? {
+                        ...note,
+                        text: editText.trim()
+                    }
+                    : note
+            )
         )
-    )
 
-    setEditingIndex(null)
-    setEditText('')
-}
+        setEditingIndex(null)
+        setEditText('')
+    }
 
     const handleApplyNote = (newNote) => {
         setNotes((previousNotes) => [
@@ -96,22 +96,22 @@ function Main() {
     }
 
     const filteredNotes = notes.filter((note) => {
-    const matchesSearch = note.text
-        .toLowerCase()
-        .includes(searchText.toLowerCase())
+        const matchesSearch = note.text
+            .toLowerCase()
+            .includes(searchText.toLowerCase())
 
-    const matchesFilter =
-        filter === 'ALL' ||
-        (filter === 'Complete' && note.completed) ||
-        (filter === 'Incomplete' && !note.completed)
+        const matchesFilter =
+            filter === 'ALL' ||
+            (filter === 'Complete' && note.completed) ||
+            (filter === 'Incomplete' && !note.completed)
 
-    return matchesSearch && matchesFilter
+        return matchesSearch && matchesFilter
     })
 
     const handleDelete = (index) => {
-    setNotes((previousNotes) =>
-        previousNotes.filter((_, noteIndex) => noteIndex !== index)
-    )
+        setNotes((previousNotes) =>
+            previousNotes.filter((_, noteIndex) => noteIndex !== index)
+        )
     }
 
     return (
@@ -235,89 +235,94 @@ function Main() {
                     ) : (
                         <div className='pt-8 w-[80%] md:w-125 mx-auto flex flex-col gap-4 pb-28'>
 
-                            {filteredNotes.map((note, index) => (
-                                <div
-                                    key={index}
-                                    className={` shadow-sm ${
-                                        darkMode
-                                            ? 'text-white'
-                                            : 'text-black'
-                                    }`}
-                                >
+                            {filteredNotes.map((note) => {
+                                const originalIndex = notes.indexOf(note)
 
-                                    <div className='flex items-center justify-between'>
+                                return (
+                                    <div
+                                        key={originalIndex}
+                                        className={`shadow-sm ${
+                                            darkMode
+                                                ? 'text-white'
+                                                : 'text-black'
+                                        }`}
+                                    >
 
-                                        <div className='flex items-center gap-3 min-w-0'>
+                                        <div className='flex items-center justify-between'>
 
-                                            <input
-                                                type='checkbox'
-                                                checked={note.completed}
-                                                onChange={() => handleComplete(index)}
-                                                className='w-4 h-4 accent-[#6C63FF] rounded cursor-pointer shrink-0'
-                                            />
+                                            <div className='flex items-center gap-3 min-w-0'>
 
-                                            {editingIndex === index ? (
-                                                <div className='flex items-center gap-2'>
-                                                    <input
-                                                        type='text'
-                                                        value={editText}
-                                                        onChange={(e) => setEditText(e.target.value)}
-                                                        className='border-[1.4px] border-[#6C63FF] rounded-lg px-2 py-1 outline-none'
-                                                    />
+                                                <input
+                                                    type='checkbox'
+                                                    checked={note.completed}
+                                                    onChange={() => handleComplete(originalIndex)}
+                                                    className='w-4 h-4 accent-[#6C63FF] rounded cursor-pointer shrink-0'
+                                                />
 
-                                                    <button
-                                                        onClick={handleSaveEdit}
-                                                        className='bg-[#6C63FF] hover:bg-[#574DDB] text-white px-3 py-1 rounded'
+                                                {editingIndex === originalIndex ? (
+                                                    <div className='flex items-center gap-2'>
+                                                        <input
+                                                            type='text'
+                                                            value={editText}
+                                                            onChange={(e) => setEditText(e.target.value)}
+                                                            className='border-[1.4px] border-[#6C63FF] rounded-lg px-2 py-1 outline-none'
+                                                        />
+
+                                                        <button
+                                                            onClick={handleSaveEdit}
+                                                            className='bg-[#6C63FF] hover:bg-[#574DDB] text-white px-3 py-1 rounded'
+                                                        >
+                                                            SAVE
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <p
+                                                        className={`wrap-break-word ${
+                                                            note.completed
+                                                                ? 'font-normal text-[16px] line-through decoration-[#6C63FF] decoration-2 px-1'
+                                                                : 'font-medium text-[18px]'
+                                                        }`}
                                                     >
-                                                        SAVE
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <p
-                                                    className={`wrap-break-word ${
-                                                        note.completed
-                                                            ? 'font-normal text-[16px] line-through decoration-[#6C63FF] decoration-2 px-1'
-                                                            : 'font-medium text-[18px]'
-                                                    }`}
+                                                        {note.text.length >= 20
+                                                            ? `${note.text.slice(0, 20)}...`
+                                                            : note.text}
+                                                    </p>
+                                                )}
+
+                                            </div>
+
+                                            <div className='flex items-center gap-3 text-sm ml-3 shrink-0'>
+
+                                                <button
+                                                    onClick={() => handleEdit(originalIndex)}
+                                                    className='opacity-70 hover:opacity-100'
                                                 >
-                                                    {note.text.length >= 20
-                                                        ? `${note.text.slice(0, 20)}...`
-                                                        : note.text}
-                                                </p>
-                                            )}
+                                                    ✏️
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleDelete(originalIndex)}
+                                                    className='opacity-70 hover:opacity-100 transition-colors duration-200'
+                                                >
+                                                    🗑️
+                                                </button>
+
+                                            </div>
 
                                         </div>
 
-                                        <div className='flex items-center gap-3 text-sm ml-3 shrink-0'>
-
-                                            <button
-                                                onClick={() => handleEdit(index)}
-                                                className='opacity-70 hover:opacity-100'>
-                                                ✏️
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleDelete(index)}
-                                                className='opacity-70 hover:opacity-100 transition-colors duration-200'
-                                            >
-                                                🗑️
-                                            </button>
-
-                                        </div>
+                                        <div className='h-0.5 bg-[#6C63FF] mt-3 rounded-full'></div>
 
                                     </div>
-
-                                    <div className='h-0.5 bg-[#6C63FF] mt-3 rounded-full'></div>
-
-                                </div>
-                            ))}
+                                )
+                            })}
 
                         </div>
                     )}
 
                     <button
                         onClick={() => setIsNewNoteOpen(true)}
-                        className='bg-[#6C63FF] w-12.5 h-12.5 rounded-full right-8 bottom-8 fixed  sm:right-8 md:right-20 lg:right-35  hover:bg-[#574DDB] transition-colors duration-200'
+                        className='bg-[#6C63FF] w-12.5 h-12.5 rounded-full right-8 bottom-8 fixed sm:right-8 md:right-20 lg:right-35 hover:bg-[#574DDB] transition-colors duration-200'
                     >
                         <img
                             className='w-6 h-6 mx-auto'
@@ -341,7 +346,6 @@ function Main() {
                     />
                 </>
             )}
-
         </>
     )
 }
