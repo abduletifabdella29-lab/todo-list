@@ -284,7 +284,7 @@ function Main() {
                                                         }`}
                                                     >
                                                         {note.text.length >= 20
-                                                            ? `${note.text.slice(0, 20)}...`
+                                                            ? `${note.text.slice(0, 45)}...`
                                                             : note.text}
                                                     </p>
                                                 )}
